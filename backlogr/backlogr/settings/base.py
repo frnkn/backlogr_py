@@ -22,11 +22,6 @@ path.append(DJANGO_ROOT)
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = False
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
-TEMPLATE_DEBUG = DEBUG
-########## END DEBUG CONFIGURATION
-
-
 ########## MANAGER CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = (
@@ -51,6 +46,10 @@ DATABASES = {
     }
 }
 ########## END DATABASE CONFIGURATION
+
+########## LOGIN REDIRECT URL
+LOGIN_REDIRECT_URL = '/backlogs'
+########## END LOGIN REDIRECT URL
 
 
 ########## GENERAL CONFIGURATION
@@ -128,16 +127,12 @@ FIXTURE_DIRS = (
 ########## TEMPLATE CONFIGURATION
 
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
+
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [normpath(join(SITE_ROOT, 'templates'))],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -145,15 +140,17 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
+            ]
         },
     },
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-dirs
+"""
 TEMPLATE_DIRS = (
     normpath(join(SITE_ROOT, 'templates')),
 )
+"""
 ########## END TEMPLATE CONFIGURATION
 
 
@@ -189,10 +186,10 @@ DJANGO_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
-    'projects',
-    'epics',
-    'stories',
     'backlogs',
+    #'epics',
+    #'stories',
+    #'non_functional_requirements',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
