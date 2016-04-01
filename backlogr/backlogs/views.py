@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from backlog_items.models import BacklogItem
 # Create your views here.
 class BacklogListView(LoginRequiredMixin, View):
 
@@ -53,8 +53,12 @@ class BacklogDetailView(LoginRequiredMixin, View):
         username = None
         if request.user.is_authenticated():
             username = request.user.username
+
         user = User.objects.get(username=username)
 
-        backlog_items = BacklogItems.objects.filter(user=user)
+        backlog_items = BacklogItem.objects.filter(user=user).filter(backlog__uuid=kwargs['uuid'])
 
-        return HttpResponse("Hello Detail View")
+        return render_to_response('backlogs/backlog_detail_view.html',
+                            {'backlog_items': backlog_items,
+                            'backlog_uuid': kwargs['uuid']},
+                            context_instance=RequestContext(request))

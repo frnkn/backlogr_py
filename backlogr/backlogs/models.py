@@ -4,7 +4,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 import uuid
-from django import forms
 
 # Create your models here.
 class Backlog(models.Model):
@@ -12,6 +11,7 @@ class Backlog(models.Model):
     user = models.ForeignKey(User)
     name = models.CharField(max_length=250)
     description = models.TextField(blank=True, null=True)
+    short_id = models.CharField(max_length=10)
      #forms.CharField(widget=forms.Textarea, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)

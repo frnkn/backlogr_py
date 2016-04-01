@@ -187,6 +187,8 @@ DJANGO_APPS = (
 # Apps specific for this project go here.
 LOCAL_APPS = (
     'backlogs',
+    'backlog_items',
+    'crispy_forms',
     #'epics',
     #'stories',
     #'non_functional_requirements',

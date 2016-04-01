@@ -1,6 +1,9 @@
 from django.test import TestCase, Client
 from models import Backlog
 from django.contrib.auth.models import AnonymousUser, User
+
+from views import BacklogListView
+from django.core.urlresolvers import reverse
 # Create your tests here.
 class BacklogModelTest(TestCase):
     def setUp(self):
@@ -12,11 +15,13 @@ class BacklogModelTest(TestCase):
 
         self.name = "My first Backlog with User Stories"
         self.description = "That is the description for my Backlog. It's optional tough."
+        self.short_id = "test"
 
         self.backlog = Backlog.objects.create(
             user=self.user,
             name=self.name,
-            description=self.description
+            description=self.description,
+            short_id=self.short_id
         )
 
     def tearDown(self):
@@ -37,8 +42,6 @@ class BacklogModelTest(TestCase):
         self.assertEqual(backlog.name, self.backlog.name)
         self.assertEqual(backlog.user, self.user)
 
-from views import BacklogListView
-from django.core.urlresolvers import reverse
 
 class BacklogListViewTest(TestCase):
     def setUp(self):
@@ -97,6 +100,7 @@ class BacklogDetailViewTest(TestCase):
         )
 
         self.client = Client()
+
 
     def tearDown(self):
         pass

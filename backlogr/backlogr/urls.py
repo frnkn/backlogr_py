@@ -17,6 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from backlogs.views import BacklogListView, BacklogDetailView
+from backlog_items.views import BacklogItemCreateView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -32,6 +33,11 @@ urlpatterns = [
     url(r'^backlogs/(?P<uuid>[^/]+)/$',
       BacklogDetailView.as_view(),
       name="backlog_detail_view"),
+
+    #Backlog Item Views
+    url(r'^backlog_items/create/(?P<backlog_uuid>[^/]+)/$',
+      BacklogItemCreateView.as_view(),
+      name="backlog_item_create_view"),
 
 ]
 

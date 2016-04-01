@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}
+<title>FRNKN - Backlog</title>
+{% endblock title %}
+
+{% block content %}
+<div class="container-fluid ta-backlog-projects">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1 class="display-1">Backlog Detail View</h1>
+      <a href="#">Export Backlog</a>
+    </div>
+  </div>
+  <div class="row">
+
+    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 sidebar">
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'backlog_item_create_view' backlog_uuid=backlog_uuid %}">Create backlog item</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Another link</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#">Disabled</a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 backlog__items__container">
+    {% if backlog_items %}
+      {% for backlog_item in backlog_items %}
+      <div class="col-xs-12">
+        <div class="card">
+          <div class="card-header">
+           <small class="muted">{{ backlog_item.backlog_item_type }}
+
+           {{ backlog_item.backlog.short_id }}-{{ backlog_item.backlog.id }}</small>
+         </div>
+          <div class="card-block">
+            <p class="card-text lead">As a {{ backlog_item.who }}, I {{ backlog_item.what }}, so that {{ backlog_item.why }}.
+            </p>
+
+            <ul class="list-inline">
+              <li class="list-inline-item">Story Points: {{ backlog_item.story_points }}</li>
+              <li class="list-inline-item">Business Value: {{ backlog_item.business_value }}</li>
+              <li class="list-inline-item"><a title="Edit this card" href="#" class="btn btn-primary btn-sm">Edit Card</a></li>
+              <li class="list-inline-item"><a title="Delete this card" href="#" class="btn btn-danger btn-sm">Delete Card</a></li>
+              <li class="list-inline-item"><a title="Show details of this card" href="#" class="btn btn-info btn-sm">Show More</a></li>
+            </ul>
+
+
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p>No backlog items yet. Create one!</p>
+    {% endif %}
+    </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+{% endblock %}
