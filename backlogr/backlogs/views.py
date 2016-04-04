@@ -8,6 +8,10 @@ from django.template import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 from backlog_items.models import BacklogItem
+import logging
+
+logger = logging.getLogger('backlogr')
+
 # Create your views here.
 class BacklogListView(LoginRequiredMixin, View):
 

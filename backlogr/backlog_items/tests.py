@@ -46,11 +46,16 @@ class BacklogItemViewTest(TestCase):
 
         self.client = Client()
 
+    def test_backlog_item_update_view(self):
+        response = self.client.get(reverse('backlog_item_update_view', kwargs={'backlog_item_uuid':self.backlog_item.uuid}))
+
+        self.assertEqual(response.status_code, 302)
 
     def test_backlog_item_create_view(self):
         response = self.client.get(reverse('backlog_item_create_view', kwargs={'backlog_uuid':self.backlog.uuid}))
-        self.assertEqual(response.status_code, 200)
-        
+
+        self.assertEqual(response.status_code, 302)
+
 
     """
     def test_backlog_item_view(self):

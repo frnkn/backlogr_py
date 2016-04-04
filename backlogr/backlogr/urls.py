@@ -17,27 +17,44 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from backlogs.views import BacklogListView, BacklogDetailView
-from backlog_items.views import BacklogItemCreateView
+from backlog_items.views import BacklogItemCreateView, BacklogItemUpdateView
+from django.views.generic import TemplateView
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    #Auth Views
+    #######Auth Views
     #url(r'^accounts/login/$', auth_views.login),
     url('^', include('django.contrib.auth.urls')),
 
-    #Backlog Views
+    #######Content Views
+    #Start Page
+    url(r'^$',
+        TemplateView.as_view(template_name="start_page/index.html"),
+        name="start_page"),
+
+    #######Backlog Views
+    #List View
     url(r'^backlogs/$',
         BacklogListView.as_view(),
         name="backlog_list_view"),
-
+    #Detail View
     url(r'^backlogs/(?P<uuid>[^/]+)/$',
       BacklogDetailView.as_view(),
       name="backlog_detail_view"),
 
-    #Backlog Item Views
+    ######Backlog Item Views
+    #Create View
     url(r'^backlog_items/create/(?P<backlog_uuid>[^/]+)/$',
       BacklogItemCreateView.as_view(),
       name="backlog_item_create_view"),
+
+    #Update View
+    url(r'^backlog_items/update/(?P<backlog_item_uuid>[^/]+)/$',
+        BacklogItemUpdateView.as_view(),
+        name="backlog_item_update_view"),
+
+
 
 ]
 
