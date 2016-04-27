@@ -8,11 +8,39 @@ from django.template import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
 from backlog_items.models import BacklogItem
-import logging
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
 
+import logging
+from braces import views
+import json
 logger = logging.getLogger('backlogr')
 
 # Create your views here.
+class AjaxBacklogRankUpdateView(views.CsrfExemptMixin, views.JsonRequestResponseMixin, View):
+    def post(self, request, *args, **kwargs):
+
+        try:
+            ranks = json.loads(request.POST['backlog_items'])
+
+        except KeyError:
+            logger.error("POST Request on ajax backlog rank update without backlog items dict: %s" % e)
+            raise Http404
+
+        for rank in ranks:
+            logger.debug(rank)
+            try:
+                obj = BacklogItem.objects.get(uuid=rank['the_id'])
+                obj.list_ui_rank = rank['index_pos']
+                obj.save()
+            except ObjectDoesNotExist:
+                logger.error("COuld not find uuid %s on ui rank update in Database" % rank['the_id'])
+                raise Http404
+        msg = {'msg': 'Your backlog was saved!'}
+        return JsonResponse(msg)
+
+
+
 class BacklogListView(LoginRequiredMixin, View):
 
     login_url = '/login/'
@@ -34,7 +62,7 @@ class BacklogListView(LoginRequiredMixin, View):
             username = request.user.username
         user = User.objects.get(username=username) #Fix that
 
-        backlogs = Backlog.objects.filter(user=user).order_by('-updated_on')
+        backlogs = Backlog.objects.filter(user=user).order_by('-created_on')
 
         return render_to_response('backlogs/backlog_list_view.html',
                                     {'backlogs': backlogs},
@@ -60,7 +88,7 @@ class BacklogDetailView(LoginRequiredMixin, View):
 
         user = User.objects.get(username=username)
 
-        backlog_items = BacklogItem.objects.filter(user=user).filter(backlog__uuid=kwargs['uuid'])
+        backlog_items = BacklogItem.objects.filter(user=user).filter(backlog__uuid=kwargs['uuid']).order_by('-list_ui_rank')
 
         return render_to_response('backlogs/backlog_detail_view.html',
                             {'backlog_items': backlog_items,

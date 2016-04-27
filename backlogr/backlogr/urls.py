@@ -16,8 +16,10 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from backlogs.views import BacklogListView, BacklogDetailView
+from backlogs.views import BacklogListView, BacklogDetailView, AjaxBacklogRankUpdateView
 from backlog_items.views import BacklogItemCreateView, BacklogItemUpdateView
+from backlog_items.views import BacklogItemBreakDownView
+from react.views import ReactPollView
 from django.views.generic import TemplateView
 
 
@@ -33,6 +35,17 @@ urlpatterns = [
         TemplateView.as_view(template_name="start_page/index.html"),
         name="start_page"),
 
+    #######Meta Views
+    #Imprint
+    url(r'^imprint/$',
+        TemplateView.as_view(template_name="meta/imprint.html"),
+        name="imprint"),
+
+    #Legal
+    url(r'^legal/$',
+        TemplateView.as_view(template_name="meta/legal.html"),
+        name="legal"),
+
     #######Backlog Views
     #List View
     url(r'^backlogs/$',
@@ -42,17 +55,34 @@ urlpatterns = [
     url(r'^backlogs/(?P<uuid>[^/]+)/$',
       BacklogDetailView.as_view(),
       name="backlog_detail_view"),
+    #Ajax UI Rank Update View
+    url(r'^backlogs/rank_update',
+      AjaxBacklogRankUpdateView.as_view(),
+      name="backlog_rank_update_view"),
 
     ######Backlog Item Views
     #Create View
     url(r'^backlog_items/create/(?P<backlog_uuid>[^/]+)/$',
       BacklogItemCreateView.as_view(),
       name="backlog_item_create_view"),
-
+    #Breakdown Create View
+    url(r'^backlog_items/breakdown/(?P<backlog_uuid>[^/]+)/(?P<parent_uuid>[^/]+)/$',
+      BacklogItemBreakDownView.as_view(),
+      name="backlog_item_breakdown_view"),
     #Update View
     url(r'^backlog_items/update/(?P<backlog_item_uuid>[^/]+)/$',
         BacklogItemUpdateView.as_view(),
         name="backlog_item_update_view"),
+
+    ######React Views
+    url(r'^api/comments/$',
+        ReactPollView.as_view(),
+        name="comments"),
+
+    url(r'^react/$',
+        TemplateView.as_view(template_name="react/tut.html"),
+        name="react-tut"),
+
 
 
 

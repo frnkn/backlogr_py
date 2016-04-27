@@ -50,7 +50,20 @@ class BacklogItem(models.Model):
     story_points = models.IntegerField(null=True, blank=True)
     business_value = models.IntegerField(null=True, blank=True)
 
-    #rank
+    #rank default should be the first
+    """
+    As a pm I want to rerank my cards in the backlog list view
+    Every item should be added to the bottom of the list!
+
+    On rearranging the ranks of all instances have to be updated and saved to the database -> DONE
+    Within a backlog list the rank must be unique
+    """
+    list_ui_rank = models.PositiveIntegerField(default=0)
+
+    """
+    Used for breakdown of backlog items
+    """
+    parent_uuid = models.CharField(max_length=255, blank=True)
     #prio
 
     created_on = models.DateTimeField(auto_now_add=True)
@@ -70,5 +83,12 @@ class BacklogItem(models.Model):
         return self.backlog.name.upper() + "-" + str(self.id)
 
     def save(self, *args, **kwargs):
+        if not self.pk:
+            #Get the highest UI Rank and assign the new item to the board
+            #If no objects exist assign 0
+            bi = BacklogItem.objects.filter(backlog=self.backlog)
+            print "CREATED"
+            print len(bi)
+            self.list_ui_rank = len(bi)
         self.short_id = self.make_short_id()
         super(BacklogItem, self).save(*args, **kwargs)

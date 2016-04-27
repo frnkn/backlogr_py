@@ -1,7 +1,22 @@
 {% extends "base.html" %}
+{% load staticfiles %}
+
 {% block title %}
 <title>FRNKN - Backlog</title>
 {% endblock title %}
+
+{% block custom_css %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<style>
+.ui-state-highlight { height: 1.5em; line-height: 1.2em; }
+.drop-target {position: relative; min-height: 200px !important; opacity: 0.7;}
+.hidden-acceptance-criteria-content {
+  visibility: hidden;
+}
+</style>
+{% endblock custom_css %}
+
+
 
 {% block content %}
 <div class="container-fluid ta-backlog-projects">
@@ -10,6 +25,22 @@
       <h1 class="display-1">Backlog Detail View</h1>
       <a href="#">Export Backlog</a>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      {% if messages %}
+      <div class="alert alert-success alert-dismissible fade in" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+      {% endif %}
+      </div>
   </div>
   <div class="row">
 
@@ -29,28 +60,41 @@
         </li>
       </ul>
     </div>
-    <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 backlog__items__container">
+    <div id="backlog__list" class="col-xs-12 col-sm-9 col-md-9 col-lg-9 backlog__items__container">
     {% if backlog_items %}
       {% for backlog_item in backlog_items %}
-      <div class="col-xs-12">
+      <div class="col-xs-12 backlog__item" data-backlog-item-id="{{ backlog_item.uuid }}">
         <div class="card">
           <div class="card-header">
-           <small class="muted">{{ backlog_item.backlog_item_type }}
+           <small class="muted">#{{backlog_item.list_ui_rank}} | {{ backlog_item.backlog_item_type }}
 
-           {{ backlog_item.backlog.short_id }}-{{ backlog_item.backlog.id }} | {{backlog_item.uuid}}</small>
+           {{ backlog_item.backlog.short_id }}-{{ backlog_item.backlog.id }} | {{ backlog_item.uuid }} | {% if backlog_item.parent_uuid %}Broken down from: <a class="" href="{% url 'backlog_item_update_view' backlog_item_uuid=backlog_item.parent_uuid %}">{{ backlog_item.parent_uuid }}</a>{% endif %}</small>
          </div>
           <div class="card-block">
-            <p class="card-text lead">As a {{ backlog_item.who }}, I {{ backlog_item.what }}, so that {{ backlog_item.why }}.
+            <p class="card-text lead">As a <span class="editable-item">{{ backlog_item.who }}</span>, I {{ backlog_item.what }}, so that {{ backlog_item.why }}.
             </p>
 
             <ul class="list-inline">
               <li class="list-inline-item">Story Points: {{ backlog_item.story_points }}</li>
               <li class="list-inline-item">Business Value: {{ backlog_item.business_value }}</li>
               <li class="list-inline-item"><a title="Edit this card" href="{% url 'backlog_item_update_view' backlog_item_uuid=backlog_item.uuid %}" class="btn btn-primary btn-sm">Edit Card</a></li>
-              <li class="list-inline-item"><a title="Delete this card" href="#" class="btn btn-danger btn-sm">Delete Card</a></li>
-              <li class="list-inline-item"><a title="Show details of this card" href="#" class="btn btn-info btn-sm">Show More</a></li>
-            </ul>
+              <li class="list-inline-item"><a title="Archive this card" href="#" class="btn btn-danger btn-sm">Archive Card</a></li>
+              <li class="list-inline-item"><a title="Break down this card" href="{% url 'backlog_item_breakdown_view' backlog_uuid=backlog_item.backlog.uuid parent_uuid=backlog_item.uuid %}" class="btn btn-warning btn-sm">Break Down</a></li>
 
+              <li class="list-inline-item"><button title="Show details of this card" data-toggle="collapse" data-target="#item_details-{{backlog_item.id}}" aria-expanded="false" aria-controls="collapseExample" class="btn btn-info btn-sm">Show More</button></li>
+
+            </ul>
+            <div class="collapse" id="item_details-{{backlog_item.id}}">
+              <div class="card card-block">
+                <p><strong>Acceptance Criteria:</strong></p>
+                <div class="hidden-acceptance-criteria-content">{{ backlog_item.acceptance_criteria }}</div>
+                <div class="js-acceptance-criteria-content">{{ backlog_item.acceptance_criteria }}</div>
+              </div>
+              <div class="card card-block">
+                <p><strong>Notes:</strong></p>
+                {{ backlog_item.notes }}
+              </div>
+            </div>
 
           </div>
         </div>
@@ -65,4 +109,87 @@
   </div>
 </div>
 
+
+{% block custom_js %}
+<script>
+$( document ).ready( function() {
+  //Get all items that are hidden and make html from markdown
+  //console.log(markdown.toHTML($(this).val()));
+  //var md = markdown.toHTML($(this).val());
+
+  $('.js-acceptance-criteria-content').each( function (){
+
+    var html_content = $(this).html();
+    console.log('html_content', html_content);
+    var md = markdown.toHTML(html_content);
+    console.log("MD1", md);
+    $(this).html(md);
+    console.log("DONE");
+  });
+});
+
+  $(function() {
+    $( "#backlog__list" ).sortable({
+      //placeholder: "ui-state-highlight",
+      opacity: 0.7,
+      start: function(evt, ui) {
+        console.log("START")
+      },
+      stop: function(evt, ui) {
+        console.log("STOP");
+        console.log("New position: " + ui.item.index());
+
+        var sortedIDs = $( "#backlog__list" ).sortable( "toArray", {attribute: 'data-backlog-item-id'} );
+        console.log("SORTED", sortedIDs);
+        var i = 0;
+        var all = []
+        var obj = {}
+        for (i; i<sortedIDs.length; i++) {
+          //store
+          the_id = sortedIDs[i]
+          index_pos = i
+
+          var ui_item = {
+            'the_id': the_id,
+            'index_pos': index_pos
+          };
+
+          all.push(ui_item);
+        }
+        console.log("ALL", all);
+        //console.log("POST DATA", post_data)
+        //$.post( "/backlogs/rank_update", {'backlog_item_ids_with_rank': sortedIDs} );
+        $.ajax({
+          type: "POST",
+          url: "/backlogs/rank_update",
+          data: {"backlog_items": JSON.stringify(all)},
+          success: function( data ){
+            console.log(data);
+            //Write to view
+          },
+          dataType: "json"
+        });
+        //$.post(, function(data){console.log(data)});
+        //console.log(ui.item.index());
+      },
+      drag: function(evt, ui) {
+        console.log("DRAG");
+      },
+      placeholder: {
+        element: function(currentItem) {
+            return $("<div class='col-xs-12 drop-target alert alert-warning'>Drop Here</div>")[0];
+        },
+        update: function(container, p) {
+            return;
+        }
+      }
+    });
+
+    $( "#backlog__list" ).disableSelection();
+
+  });
+
+
+</script>
+{% endblock custom_js %}
 {% endblock %}

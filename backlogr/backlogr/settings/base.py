@@ -122,7 +122,7 @@ FIXTURE_DIRS = (
     normpath(join(SITE_ROOT, 'fixtures')),
 )
 ########## END FIXTURE CONFIGURATION
-
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 ########## TEMPLATE CONFIGURATION
 
@@ -189,15 +189,20 @@ LOCAL_APPS = (
     'backlogs',
     'backlog_items',
     'crispy_forms',
+    'braces',
     #'epics',
     #'stories',
     #'non_functional_requirements',
 )
 
+
+
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
 ########## END APP CONFIGURATION
 
+########## DJANGO CRISPY BOOTSTRAP TEMPLATE
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 ########## LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging

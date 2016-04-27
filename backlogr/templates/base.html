@@ -13,7 +13,17 @@
         {% block site_description %}
         <meta name="description" content="Easily manage backogs, user stories, epics and non functional requirements with FRNKN">
         {% endblock site_description %}
+        {% block js_libraries %}
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <!--Markdown JS-->
+        <script src="{% static "js/markdown.js" %}"></script>
+        {% endblock js_libraries %}
+
         {% block custom_css %}
+
+
+
         <style>
           /* Sticky footer styles
           -------------------------------------------------- */
@@ -54,15 +64,19 @@
 
     <body>
     {% block content %}{% endblock content %}
-    <footer class="footer">
+    <!--<footer class="footer">
       <div class="container">
-        <span class="text-muted">&copy; FRNKN | <a href="#">Imprint</a> | <a href="#">Legal</a></span>
+        <span class="text-muted">&copy; FRNKN | <a href="{% url 'imprint' %}">Imprint</a> | <a href="{% url 'legal' %}">Legal</a></span>
       </div>
-    </footer>
-
-    </body>
+    </footer>-->
 
 
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+  </body>
+
+
+
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
+    {% block custom_js %}
+    {% endblock custom_js %}
+
 </html>
