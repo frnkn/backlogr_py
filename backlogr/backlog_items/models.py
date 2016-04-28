@@ -64,6 +64,8 @@ class BacklogItem(models.Model):
     Used for breakdown of backlog items
     """
     parent_uuid = models.CharField(max_length=255, blank=True)
+    is_archive = models.BooleanField(default=True)
+
     #prio
 
     created_on = models.DateTimeField(auto_now_add=True)
