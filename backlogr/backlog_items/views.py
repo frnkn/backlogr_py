@@ -41,6 +41,10 @@ logger = logging.getLogger('backlogr')
 
 * Certain events have to be logged such as exceptions as they could be security relevant. -> DONE
 """
+class BacklogItemUpdateAjaxView(LoginRequiredMixin, UpdateView):
+    pass
+
+
 class BacklogItemBreakDownView(LoginRequiredMixin, CreateView):
     """
     As a pm I'd like to breakdown a backlog item into smaller backlog items and keeping its parent relation
@@ -84,7 +88,7 @@ class BacklogItemUpdateView(LoginRequiredMixin, UpdateView):
     """
     model = BacklogItem
     template_name = 'backlog_items/backlog_item_update_view.html'
-    fields = ['backlog_item_type', 'who', 'what', 'why', 'acceptance_criteria', 'notes', 'story_points', 'business_value']
+    fields = ['backlog_item_type', 'who', 'what', 'why', 'acceptance_criteria', 'notes', 'story_points', 'business_value', 'is_archive']
 
     def get_object(self, queryset=None):
         try:

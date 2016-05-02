@@ -16,6 +16,27 @@ class BacklogIntegrationTest(unittest.TestCase):
     def tearDown(self):
         self.driver.close()
 
+    def test_start_page(self):
+        #User navigates to the start page
+        self.driver.get(self.the_host + "/")
+
+        #He mentions the start page content as it has the class ta-start-page-jumbo
+        self.assertTrue(self.driver.find_element_by_class_name('ta-start-page-jumbo'))
+
+    def test_meta_pages(self):
+        #User navigates to the imprint page
+        self.driver.get(self.the_host + "/imprint")
+
+        #He sees the imprint page
+        self.assertTrue(self.driver.find_element_by_class_name('ta-imprint'))
+
+        #He goes to the legal page
+        self.driver.get(self.the_host + "/legal")
+
+        #He sees the legal page
+        self.assertTrue(self.driver.find_element_by_class_name('ta-legal'))
+
+
     def test_login_and_backlog_mgmt(self):
         #User navigates to login to get the login mask
         self.driver.get(self.the_host + "/login")
@@ -43,7 +64,7 @@ class BacklogIntegrationTest(unittest.TestCase):
         self.assertTrue(self.driver.find_element_by_class_name('ta-backlog-projects'))
 
         #He decides to use the first backlog and clicks on the button to navigate into the backlog detail view
-        self.driver.find_element_by_class_name("NOT DEFINED")
+        self.driver.find_element_by_class_name("NOT DEFINED") #Test implementation has to be finished
 
 
 
